@@ -1,6 +1,23 @@
 import {ctx, canvas} from "./index.js"
 
-export class Sprite {
+class CollisionBlock {
+    constructor({position}) {
+        this.position = position
+        this.width = 16
+        this.height = 16
+    }
+
+    update() {
+        this.draw()
+    }
+
+    draw() {
+        ctx.fillStyle = 'rgba(255,0,0,0.5)'
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+    }
+}
+
+class Sprite {
     constructor({position, imageSrc}) {
         this.position = position
         this.image = new Image()
@@ -20,7 +37,7 @@ export class Sprite {
 }
 
 class Player {
-    constructor(canvas, ctx, position, velocity) {
+    constructor(position, velocity) {
         this.position = position
         this.velocity = velocity
         this.gravity = 0.2
@@ -49,5 +66,7 @@ class Player {
 
 
 export {
+    CollisionBlock,
+    Sprite,
     Player,
 }
