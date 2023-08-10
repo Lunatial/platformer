@@ -9,7 +9,7 @@ canvas.height = 576
 
 const NUMBER_OF_HORIZONTAL_TILES = 36
 // const NUMBER_OF_VERTICAL_TILES = 27
-const SCALE_NUMBER = 4
+export const SCALE_NUMBER = 4
 const scaledCanvas = {
     width: canvas.width / SCALE_NUMBER,
     height: canvas.height / SCALE_NUMBER,
@@ -45,14 +45,12 @@ for (let i = 0; i < platformCollisions.length; i += NUMBER_OF_HORIZONTAL_TILES) 
 
 fillCollisionBlocks(platformCollisions2D)
 
-const player1 = new Player(
-    {x: 200, y: 100},
-    {x: 0, y: 2},
-)
-
-const player2 = new Player(
-    {x: 600, y: 140},
-    {x: 0, y: 2},
+const player = new Player(
+    {
+        position: {x: 100, y: 400},
+        velocity: {x: 0, y: 1},
+        collisionBlocks
+    }
 )
 
 const background = new Sprite(
@@ -67,6 +65,7 @@ function animate() {
     // ctx.fillRect(0, 0, canvas.width, canvas.height,)
 
     ctx.save()
+
         // négyszeresére növeljük a rajzolás méretét
         ctx.scale(SCALE_NUMBER, SCALE_NUMBER)
        // a háttérkép pozícióját a bal alsó sarokba igazítjuk
@@ -75,18 +74,18 @@ function animate() {
         background.update()
         // kirajzoljuk a collisionBlockokat
         collisionBlocks.forEach(block => block.update())
+
+        player.update()
+
+        // Hogy a játékos alapvetően ne mozogjon X tengelyen, csak ha nyomva van valamelyik gomb.
+        player.velocity.x = 0
+        if (keys.a.pressed) {
+            player.velocity.x = -5
+        } else if (keys.d.pressed) {
+            player.velocity.x = 5
+        }
+
     ctx.restore()
-
-    player1.update()
-    player2.update()
-
-    // Hogy a játékos alapvetően ne mozogjon X tengelyen, csak ha nyomva van valamelyik gomb.
-    player1.velocity.x = 0
-    if (keys.a.pressed) {
-        player1.velocity.x = -5
-    } else if (keys.d.pressed) {
-        player1.velocity.x = 5
-    }
 
     requestAnimationFrame(animate)
 }
@@ -112,9 +111,7 @@ window.addEventListener('keydown', (e) => {
             keys.d.pressed = true
             break
         case 'w':
-            if (player1.position.y + player1.height >= canvas.height) {
-                player1.velocity.y = -10
-            }
+            player.velocity.y = -8
             break
     }
 })
