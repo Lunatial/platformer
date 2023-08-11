@@ -52,6 +52,48 @@ const player = new Player(
         collisionBlocks,
         imageSrc: '../img/warrior/Idle.png',
         frameRate: 8,
+        animations: {
+            Idle: {
+                imageSrc: './img/warrior/Idle.png',
+                frameRate: 8,
+                frameBuffer: 3,
+            },
+            Run: {
+                imageSrc: './img/warrior/Run.png',
+                frameRate: 8,
+                frameBuffer: 5,
+            },
+            Jump: {
+                imageSrc: './img/warrior/Jump.png',
+                frameRate: 2,
+                frameBuffer: 3,
+            },
+            Fall: {
+                imageSrc: './img/warrior/Fall.png',
+                frameRate: 2,
+                frameBuffer: 3,
+            },
+            FallLeft: {
+                imageSrc: './img/warrior/FallLeft.png',
+                frameRate: 2,
+                frameBuffer: 3,
+            },
+            RunLeft: {
+                imageSrc: './img/warrior/RunLeft.png',
+                frameRate: 8,
+                frameBuffer: 5,
+            },
+            IdleLeft: {
+                imageSrc: './img/warrior/IdleLeft.png',
+                frameRate: 8,
+                frameBuffer: 3,
+            },
+            JumpLeft: {
+                imageSrc: './img/warrior/JumpLeft.png',
+                frameRate: 2,
+                frameBuffer: 3,
+            },
+        },
     }
 )
 
@@ -79,10 +121,36 @@ function animate() {
     // Hogy a játékos alapvetően ne mozogjon X tengelyen, csak ha nyomva van valamelyik gomb.
     player.velocity.x = 0
     if (keys.a.pressed) {
-        player.velocity.x = -5
+        player.switchSprite('RunLeft')
+        player.velocity.x = -2
+        player.lastDirection = 'left'
     } else if (keys.d.pressed) {
-        player.velocity.x = 5
+        player.switchSprite('Run')
+        player.velocity.x = 2
+        player.lastDirection = 'right'
+    } else if (player.velocity.y === 0) {
+       if (player.lastDirection === 'right') {
+           player.switchSprite('Idle')
+       } else {
+              player.switchSprite('IdleLeft')
+       }
     }
+
+    if (player.velocity.y < 0) {
+        if (player.lastDirection === 'right') {
+            player.switchSprite('Jump')
+        } else {
+            player.switchSprite('JumpLeft')
+        }
+    } else if (player.velocity.y > 0) {
+        if (player.lastDirection === 'right') {
+            player.switchSprite('Fall')
+        } else {
+            player.switchSprite('FallLeft')
+        }
+
+    }
+
 
     ctx.restore()
 

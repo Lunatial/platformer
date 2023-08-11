@@ -22,10 +22,12 @@ class Sprite {
     constructor({position, imageSrc, frameRate = 1, frameBuffer = 3, scale = 1}) {
         this.position = position
         this.scale = scale
+        this.loaded = false
         this.image = new Image()
         this.image.onload = () => {
             this.width = (this.image.width / this.frameRate) * this.scale
             this.height = (this.image.height) * this.scale
+            this.loaded = true
         }
         this.image.src = imageSrc
         this.frameRate = frameRate
@@ -78,7 +80,7 @@ class Sprite {
 }
 
 class Player extends Sprite {
-    constructor({position, velocity, collisionBlocks, imageSrc, frameRate, scale = 0.5}) {
+    constructor({position, velocity, collisionBlocks, imageSrc, frameRate, scale = 0.5, animations}) {
         super({position, imageSrc, frameRate, scale})
         this.position = position
         this.velocity = velocity
@@ -92,16 +94,35 @@ class Player extends Sprite {
             width: 10,
             height: 10,
         }
+        this.animations = animations
+        this.lastDirection = 'right'
+
+        for (const animationName in this.animations) {
+            const image = new Image()
+            image.src = this.animations[animationName].imageSrc
+
+            this.animations[animationName].image = image
+        }
+    }
+
+    switchSprite(animationName) {
+        if (this.image === this.animations[animationName] || !this.loaded) {
+            return
+        }
+
+        this.image = this.animations[animationName].image
+        this.frameRate = this.animations[animationName].frameRate
+        this.frameBuffer = this.animations[animationName].frameBuffer
     }
 
     update() {
         this.updateFrames()
-        //draws out the image
-        ctx.fillStyle = 'rgba(0,255,0,0.2)'
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
-        //draws out the hitbox rectangle
-        ctx.fillStyle = 'rgba(255,0,0,0.2)'
-        ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
+        // //draws out the image
+        // ctx.fillStyle = 'rgba(0,255,0,0.2)'
+        // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+        // //draws out the hitbox rectangle
+        // ctx.fillStyle = 'rgba(255,0,0,0.2)'
+        // ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
 
         this.draw()
         this.position.x += this.velocity.x
@@ -150,8 +171,8 @@ class Player extends Sprite {
     }
 
     applyGravity() {
-        this.position.y += this.velocity.y
         this.velocity.y += this.gravity
+        this.position.y += this.velocity.y
     }
 
     checkForVerticalCollision() {
