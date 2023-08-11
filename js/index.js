@@ -56,7 +56,7 @@ const player = new Player(
             Idle: {
                 imageSrc: './img/warrior/Idle.png',
                 frameRate: 8,
-                frameBuffer: 3,
+                frameBuffer: 7,
             },
             Run: {
                 imageSrc: './img/warrior/Run.png',
@@ -86,7 +86,7 @@ const player = new Player(
             IdleLeft: {
                 imageSrc: './img/warrior/IdleLeft.png',
                 frameRate: 8,
-                frameBuffer: 3,
+                frameBuffer: 7,
             },
             JumpLeft: {
                 imageSrc: './img/warrior/JumpLeft.png',

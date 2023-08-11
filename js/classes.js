@@ -106,7 +106,7 @@ class Player extends Sprite {
     }
 
     switchSprite(animationName) {
-        if (this.image === this.animations[animationName] || !this.loaded) {
+        if (this.image === this.animations[animationName].image || !this.loaded) {
             return
         }
 
