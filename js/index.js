@@ -47,9 +47,11 @@ fillCollisionBlocks(platformCollisions2D)
 
 const player = new Player(
     {
-        position: {x: 100, y: 400},
+        position: {x: 100, y: 0},
         velocity: {x: 0, y: 1},
-        collisionBlocks
+        collisionBlocks,
+        imageSrc: '../img/warrior/Idle.png',
+        frameRate: 8,
     }
 )
 
@@ -61,29 +63,26 @@ const background = new Sprite(
 )
 
 function animate() {
-    // ctx.fillStyle = 'white'
-    // ctx.fillRect(0, 0, canvas.width, canvas.height,)
-
     ctx.save()
 
-        // négyszeresére növeljük a rajzolás méretét
-        ctx.scale(SCALE_NUMBER, SCALE_NUMBER)
-       // a háttérkép pozícióját a bal alsó sarokba igazítjuk
-        ctx.translate(0, -background.image.height + scaledCanvas.height)
-        // kirajzoljuk a háttérképet
-        background.update()
-        // kirajzoljuk a collisionBlockokat
-        collisionBlocks.forEach(block => block.update())
+    // négyszeresére növeljük a rajzolás méretét
+    ctx.scale(SCALE_NUMBER, SCALE_NUMBER)
+    // a háttérkép pozícióját a bal alsó sarokba igazítjuk
+    ctx.translate(0, -background.image.height + scaledCanvas.height)
+    // kirajzoljuk a háttérképet
+    background.update()
+    // kirajzoljuk a collisionBlockokat
+    collisionBlocks.forEach(block => block.update())
 
-        player.update()
+    player.update()
 
-        // Hogy a játékos alapvetően ne mozogjon X tengelyen, csak ha nyomva van valamelyik gomb.
-        player.velocity.x = 0
-        if (keys.a.pressed) {
-            player.velocity.x = -5
-        } else if (keys.d.pressed) {
-            player.velocity.x = 5
-        }
+    // Hogy a játékos alapvetően ne mozogjon X tengelyen, csak ha nyomva van valamelyik gomb.
+    player.velocity.x = 0
+    if (keys.a.pressed) {
+        player.velocity.x = -5
+    } else if (keys.d.pressed) {
+        player.velocity.x = 5
+    }
 
     ctx.restore()
 

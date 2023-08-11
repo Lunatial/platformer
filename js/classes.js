@@ -2,10 +2,10 @@ import {ctx, canvas, SCALE_NUMBER} from "./index.js"
 import {collision} from "./collision.js"
 
 class CollisionBlock {
-    constructor({position}) {
+    constructor({position, height = 16 }) {
         this.position = position
         this.width = 16
-        this.height = 16
+        this.height = height
     }
 
     update() {
@@ -19,40 +19,77 @@ class CollisionBlock {
 }
 
 class Sprite {
-    constructor({position, imageSrc}) {
+    constructor({position, imageSrc, frameRate = 1, frameBuffer = 3, scale = 1}) {
         this.position = position
+        this.scale = scale
         this.image = new Image()
+        this.image.onload = () => {
+            this.width = (this.image.width / this.frameRate) * this.scale
+            this.height = (this.image.height) * this.scale
+        }
         this.image.src = imageSrc
+        this.frameRate = frameRate
+        this.currentFrame = 0
+        this.frameBuffer = frameBuffer
+        this.elapsedFrames = 0
     }
 
     update() {
         this.draw()
+        this.updateFrames()
     }
 
     draw() {
         if (!this.image) {
             return
         }
-        ctx.drawImage(this.image, this.position.x, this.position.y,)
+        const cropBox = {
+            position: {
+                x: this.currentFrame * this.image.width / this.frameRate,
+                y: 0,
+            },
+            width: this.image.width / this.frameRate,
+            height: this.image.height,
+        }
+
+        ctx.drawImage(
+            this.image,
+            cropBox.position.x,
+            cropBox.position.y,
+            cropBox.width,
+            cropBox.height,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height,
+        )
+    }
+
+    updateFrames() {
+        this.elapsedFrames++
+        if (this.elapsedFrames % this.frameBuffer === 0) {
+            if (this.currentFrame < this.frameRate - 1) {
+                this.currentFrame++
+            } else {
+                this.currentFrame = 0
+            }
+        }
     }
 }
 
-class Player {
-    constructor({position, velocity, collisionBlocks}) {
+class Player extends Sprite {
+    constructor({position, velocity, collisionBlocks, imageSrc, frameRate, scale = 0.5}) {
+        super({position, imageSrc, frameRate, scale})
         this.position = position
         this.velocity = velocity
-        this.gravity = 0.2
-        this.height = 100 / SCALE_NUMBER
-        this.width = 100 / SCALE_NUMBER
+        this.gravity = 0.5
         this.collisionBlocks = collisionBlocks
     }
 
-    draw() {
-        ctx.fillStyle = 'red'
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
-
     update() {
+        this.updateFrames()
+        ctx.fillStyle = 'rgba(96,148,79,0.5)'
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
         this.draw()
         this.position.x += this.velocity.x
         this.checkForHorizontalCollision()
