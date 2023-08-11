@@ -47,7 +47,7 @@ fillCollisionBlocks(platformCollisions2D)
 
 const player = new Player(
     {
-        position: {x: 100, y: 0},
+        position: {x: 100, y: 300},
         velocity: {x: 0, y: 1},
         collisionBlocks,
         imageSrc: '../img/warrior/Idle.png',
