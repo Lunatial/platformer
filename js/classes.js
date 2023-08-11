@@ -109,7 +109,7 @@ class Player extends Sprite {
         if (this.image === this.animations[animationName].image || !this.loaded) {
             return
         }
-
+        this.currentFrame = 0
         this.image = this.animations[animationName].image
         this.frameRate = this.animations[animationName].frameRate
         this.frameBuffer = this.animations[animationName].frameBuffer
