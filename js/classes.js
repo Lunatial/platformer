@@ -1,8 +1,8 @@
-import {ctx, canvas, SCALE_NUMBER} from "./index.js"
+import {ctx, canvas, SCALE_NUMBER, scaledCanvas, camera, backgroundImageHeight} from "./index.js"
 import {collision} from "./collision.js"
 
 class CollisionBlock {
-    constructor({position, height = 16}) {
+    constructor({position, height = 4}) {
         this.position = position
         this.width = 16
         this.height = height
@@ -13,7 +13,7 @@ class CollisionBlock {
     }
 
     draw() {
-        ctx.fillStyle = 'rgba(255,0,0,0.5)'
+        ctx.fillStyle = 'rgba(255,0,0,0)'
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 }
@@ -84,7 +84,7 @@ class Player extends Sprite {
         super({position, imageSrc, frameRate, scale})
         this.position = position
         this.velocity = velocity
-        this.gravity = 0.5
+        this.gravity = 0.1
         this.collisionBlocks = collisionBlocks
         this.hitbox = {
             position: {
@@ -102,6 +102,15 @@ class Player extends Sprite {
             image.src = this.animations[animationName].imageSrc
 
             this.animations[animationName].image = image
+        }
+
+        this.cameraBox = {
+            position: {
+                x: this.position.x,
+                y: this.position.y,
+            },
+            width: 200,
+            height: 80,
         }
     }
 
@@ -124,13 +133,76 @@ class Player extends Sprite {
         // ctx.fillStyle = 'rgba(255,0,0,0.2)'
         // ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
 
+        // //draws out the cameraBox rectangle
+        // ctx.fillStyle = 'rgba(0,0, 255, 0.2)'
+        // ctx.fillRect(this.cameraBox.position.x, this.cameraBox.position.y, this.cameraBox.width, this.cameraBox.height)
+
+
         this.draw()
         this.position.x += this.velocity.x
         this.updateHitbox()
+        this.updatecameraBox()
         this.checkForHorizontalCollision()
         this.applyGravity()
         this.updateHitbox()
         this.checkForVerticalCollision()
+    }
+
+    updatecameraBox() {
+        this.cameraBox = {
+            position: {
+                x: this.position.x - 50,
+                y: this.position.y,
+            },
+            width: 200,
+            height: 80,
+        }
+    }
+
+    shouldPanCameraToTheLeft() {
+        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width
+
+        if (cameraBoxRightSide >= 576) return
+
+        if (
+            cameraBoxRightSide >=
+            scaledCanvas.width + Math.abs(camera.position.x)
+        ) {
+            camera.position.x -= this.velocity.x
+        }
+    }
+
+    shouldPanCameraToTheRight() {
+        if (this.cameraBox.position.x <= 0) {
+            return
+        }
+
+        if (this.cameraBox.position.x <= Math.abs(camera.position.x)) {
+            camera.position.x -= this.velocity.x
+        }
+    }
+
+    shouldPanCameraDown() {
+        if (this.cameraBox.position.y + this.velocity.y <= 0) {
+            return
+        }
+
+        if (this.cameraBox.position.y <= Math.abs(camera.position.y)) {
+            camera.position.y -= this.velocity.y
+        }
+    }
+
+    shouldPanCameraUp() {
+        if (this.cameraBox.position.y + this.cameraBox.height + this.velocity.y >= backgroundImageHeight) {
+            return
+        }
+
+        if (
+            this.cameraBox.position.y + this.cameraBox.height >=
+            Math.abs(camera.position.y) + scaledCanvas.height
+        ) {
+            camera.position.y -= this.velocity.y
+        }
     }
 
     updateHitbox() {

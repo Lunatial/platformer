@@ -10,7 +10,7 @@ canvas.height = 576
 const NUMBER_OF_HORIZONTAL_TILES = 36
 // const NUMBER_OF_VERTICAL_TILES = 27
 export const SCALE_NUMBER = 4
-const scaledCanvas = {
+export const scaledCanvas = {
     width: canvas.width / SCALE_NUMBER,
     height: canvas.height / SCALE_NUMBER,
 }
@@ -104,13 +104,22 @@ const background = new Sprite(
     }
 )
 
+export const backgroundImageHeight = 432
+
+export const camera = {
+    position: {
+        x: 0,
+        y: -backgroundImageHeight + scaledCanvas.height,
+    },
+}
+
 function animate() {
     ctx.save()
 
     // négyszeresére növeljük a rajzolás méretét
     ctx.scale(SCALE_NUMBER, SCALE_NUMBER)
     // a háttérkép pozícióját a bal alsó sarokba igazítjuk
-    ctx.translate(0, -background.image.height + scaledCanvas.height)
+    ctx.translate(camera.position.x, camera.position.y)
     // kirajzoljuk a háttérképet
     background.update()
     // kirajzoljuk a collisionBlockokat
@@ -124,10 +133,12 @@ function animate() {
         player.switchSprite('RunLeft')
         player.velocity.x = -2
         player.lastDirection = 'left'
+        player.shouldPanCameraToTheRight()
     } else if (keys.d.pressed) {
         player.switchSprite('Run')
         player.velocity.x = 2
         player.lastDirection = 'right'
+        player.shouldPanCameraToTheLeft()
     } else if (player.velocity.y === 0) {
        if (player.lastDirection === 'right') {
            player.switchSprite('Idle')
@@ -137,12 +148,14 @@ function animate() {
     }
 
     if (player.velocity.y < 0) {
+        player.shouldPanCameraDown()
         if (player.lastDirection === 'right') {
             player.switchSprite('Jump')
         } else {
             player.switchSprite('JumpLeft')
         }
     } else if (player.velocity.y > 0) {
+        player.shouldPanCameraUp()
         if (player.lastDirection === 'right') {
             player.switchSprite('Fall')
         } else {
@@ -178,7 +191,7 @@ window.addEventListener('keydown', (e) => {
             keys.d.pressed = true
             break
         case 'w':
-            player.velocity.y = -8
+            player.velocity.y = -4
             break
     }
 })
