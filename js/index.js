@@ -140,11 +140,11 @@ function animate() {
         player.lastDirection = 'right'
         player.shouldPanCameraToTheLeft()
     } else if (player.velocity.y === 0) {
-       if (player.lastDirection === 'right') {
-           player.switchSprite('Idle')
-       } else {
-              player.switchSprite('IdleLeft')
-       }
+        if (player.lastDirection === 'right') {
+            player.switchSprite('Idle')
+        } else {
+            player.switchSprite('IdleLeft')
+        }
     }
 
     if (player.velocity.y < 0) {
@@ -163,7 +163,6 @@ function animate() {
         }
 
     }
-
 
     ctx.restore()
 
